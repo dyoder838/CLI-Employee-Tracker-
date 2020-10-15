@@ -151,7 +151,88 @@ function addThings(){
         
         //TODO: addRoles
         function addRoles(){
-            console.log("add a role");
+            
+            connection.query("SELECT * FROM department", function(err, data){
+                
+                if (err) throw err
+                       // use roleArr in the choices section in inquirer
+                let depArr = data.map(function(dep){
+                    return{
+                        name: dep.department_name + " id:" + dep.id,
+                        value: dep.id
+                    }
+                });
+            
+                inquirer.prompt([
+                    {
+                        type: "list",
+                        message: "What role would you like to add?",
+                        name: "title", 
+                        choices: ["Manager", "Senior Associate", "Associate", "Minion"]    
+                    },
+                    {
+                        type: "list",
+                        message: "What is this role's annual gross salary?",
+                        name: "salary",
+                        choices: [ 55000, 45000, 35000, 25000 ]
+                    },
+                    {
+                        type: "list",
+                        message: "What department does this role belong to?",
+                        name: "departmentId",
+                        choices: depArr
+                    },
+                    {
+                        type: "list",
+                        message: "That was so fun!, what would you like to do now?",
+                        name: "afterAddRole",
+                        choices: ["Add another department", "Add another role", "Add an employee", "Return to main menu", "Quit"]
+                    }
+                ]).then(function(answer) {
+                    
+                    connection.query(
+                       
+                        "INSERT INTO role SET ?",
+                        {
+                            title: answer.title,
+                            salary: answer.salary,
+                            department_id: answer.departmentId
+                        },
+                        
+                        function(err) {
+                            if (err) throw err;
+                            console.log("You are departmentally sound");
+                        }
+                    );
+
+                    switch(answer.afterAddRole){
+                        
+                        case "Add another department":
+                            addDepartments();
+                            break;
+                    
+                        case "Add another role":
+                            addRoles();
+                            break;
+        
+                        case "Add an employee":
+                            addEmployees();
+                            break;
+
+                        case "Return to main menu":
+                            start();
+                            break;
+                        
+                        case "Quit":
+                            connection.end();
+                            break;
+        
+                        default: 
+                            console.log("Something went wrong!");
+                            break;
+                    }
+                });
+            })    
         }
         
         //TODO: addEmployees
@@ -165,7 +246,7 @@ function addThings(){
                        // use roleArr in the choices section in inquirer
                 let roleArr = data.map(function(role){
                     return{
-                        name: role.title, 
+                        name: role.title + "at rate" + role.salary,
                         value: role.id
                     }
                 });
