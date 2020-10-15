@@ -201,7 +201,7 @@ function addThings(){
                         
                         function(err) {
                             if (err) throw err;
-                            console.log("You are departmentally sound");
+                            console.log("You have roles");
                         }
                     );
 
@@ -246,7 +246,7 @@ function addThings(){
                        // use roleArr in the choices section in inquirer
                 let roleArr = data.map(function(role){
                     return{
-                        name: role.title + "at rate" + role.salary,
+                        name: role.title,
                         value: role.id
                     }
                 });
@@ -289,17 +289,65 @@ function addThings(){
                             // check for err here, this should return a managers id number 
                             type: "list",
                             message: "Who is this employees manager?",
-                            name: "whoManager",
+                            name: "managerId",
                             choices: empArr,
                             when: function(response){
-                                return response.roleId !== "Manager"
+                                return response.roleId !== 1
                             }
                         },
                         {
-                    
-                        }, 
+                            type: "list",
+                            message: "That was so fun!, what would you like to do now?",
+                            name: "afterAddEmployee",
+                            choices: ["Add another department", "Add another role", "Add another employee", "Return to main menu", "Quit"]
+                        }
+                    ]).then(function(answer) {
+                        
+                        connection.query(
+                           
+                            "INSERT INTO employee SET ?",
+                            {
+                                first_name: answer.firstName,
+                                last_name: answer.lastName,
+                                role_id: answer.roleId,
+                                manager_id: answer.managerId
+                            },
                             
-                    ])
+                            function(err) {
+                                if (err) throw err;
+                                console.log("You have employees");
+                            }
+                        );
+    
+                        switch(answer.afterAddEmployee){
+                            
+                            case "Add another department":
+                                addDepartments();
+                                break;
+                        
+                            case "Add another role":
+                                addRoles();
+                                break;
+            
+                            case "Add another employee":
+                                addEmployees();
+                                break;
+    
+                            case "Return to main menu":
+                                start();
+                                break;
+                            
+                            case "Quit":
+                                connection.end();
+                                break;
+            
+                            default: 
+                                console.log("Something went wrong!");
+                                break;
+                        }
+                    });
+                            
+                    
                 })        
             })
 
