@@ -1,26 +1,18 @@
 INSERT INTO department (name)
-VALUES ("Human Resources");
-INSERT INTO role (title, salary, department_id)
-VALUES ("Human Resources Representative", 70000, department_id);
+VALUES ("Home");
 INSERT INTO department (name)
-VALUES ("Engineering");
+VALUES ("Mens");
 INSERT INTO department (name)
-VALUES ("Management");
+VALUES ("Electronics");
 INSERT INTO department (name)
-VALUES ("Production");
+VALUES ("Gardening");
 
-INSERT INTO employee_role (title, salary, department_id)
-VALUES ("Administrative Assistant", 50000, 0);
 INSERT INTO role (title, salary, department_id)
-VALUES ("Engineer", 150000, 1);
+VALUES ("Manager", 50000, );
 INSERT INTO role (title, salary, department_id)
-VALUES ("Intern", 45000, 1);
+VALUES ("Associate", 150000, );
 INSERT INTO role (title, salary, department_id)
-VALUES ("Project Manager", 200000, 2);
-INSERT INTO role (title, salary, department_id)
-VALUES ("Production Manager", 90000, 2);
-INSERT INTO role (title, salary, department_id)
-VALUES ("Worker", 55000, 3);
+VALUES ("Minion", 45000, );
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES ("Grace", "Pritchard", 0, 0);
