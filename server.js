@@ -1,6 +1,5 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const path = require("path")
 require("console.table")
 var connection = mysql.createConnection({
     host: "localhost",
