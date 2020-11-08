@@ -1,4 +1,3 @@
-
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const path = require("path")
@@ -23,7 +22,8 @@ connection.connect(function (err) {
     start();
 });
 
-// This starts the line of questioning  
+// This starts the line of questioning  --------------------------------------- Start
+// Answers are linked to functions that start the appropriate line of questioning 
 function start() {
 
     inquirer.prompt([
@@ -56,7 +56,7 @@ function start() {
     })
 }
 
-//TODO: addThings function 
+// --------------------------------------------------------------------------------------    Add things  
 function addThings() {
 
     console.log("adding things");
@@ -89,7 +89,7 @@ function addThings() {
         };
     })
 }
-//TODO: addDepartments
+// ------------------------------------------------------- Add departments
 function addDepartments() {
 
     // console.log("add a department")
@@ -149,13 +149,15 @@ function addDepartments() {
     });
 };
 
-//TODO: addRoles
+// -----------------------------------------------------------------Add roles
 function addRoles() {
 
+    // Get all data from department table
     connection.query("SELECT * FROM department", function (err, data) {
 
         if (err) throw err
-        // use roleArr in the choices section in inquirer
+        
+        // use depArr in the choices section in inquirer for dynamic selection
         let depArr = data.map(function (dep) {
             return {
                 name: dep.department_name + " id:" + dep.id,
@@ -235,15 +237,19 @@ function addRoles() {
     })
 }
 
-//TODO: addEmployees
+// -------------------------------------------------------------------Add employees
 function addEmployees() {
 
     console.log("add an employee");
 
+    // Get all data from role table 
     connection.query("SELECT * FROM role", function (err, data) {
 
         if (err) throw err
-        // use roleArr in the choices section in inquirer
+
+        // use roleArr in the choices section in inquirer - creates an array of current roles by title with the value of their id for 
+        // CLI user to chose from
+        // Note: Managers role have been hard coded to id# 1
         let roleArr = data.map(function (role) {
             return {
                 name: role.title,
@@ -251,12 +257,14 @@ function addEmployees() {
             }
         });
 
+        // Get all managers by process of elimination - if they don't have a manager_id, they are a manager. 
+        // note: if managers can have managers, this will not work. 
         connection.query("SELECT * FROM employee WHERE manager_id IS NULL", function (err, data) {
 
             if (err) throw err
-            // I want an array of employees who are managers
-            // I need to match the role id of an employee to manager
-            // all employees where role id = whatever manager role id number is
+           
+            // Array of managers by first and last name, their values are their id 
+            
             let empArr = data.map(function (employee) {
                 return {
                     name: employee.first_name + " " + employee.last_name,
@@ -277,16 +285,12 @@ function addEmployees() {
                     name: "lastName",
                 },
                 {
-                    // roles are determined in the role section
-                    // once roles are input, this field will populate 
-                    // this will be a role title and id - user should select the title, the desired outcome is that titles id number
                     type: "list",
                     message: "What is the role of the employee you would like to add?",
                     name: "roleId",
                     choices: roleArr
                 },
                 {
-                    // check for err here, this should return a managers id number 
                     type: "list",
                     message: "Who is this employees manager?",
                     name: "managerId",
@@ -353,7 +357,7 @@ function addEmployees() {
 
 }
 
-//TODO: viewThings function
+// ----------------------------------------------------------------------------------------- viewThings function
 function viewThings() {
 
     console.log("viewing things");
@@ -395,6 +399,7 @@ function viewThings() {
     })
 }
 
+// ----------------------------------------------------------View Employees
 function viewEmployees() {
 
     console.log("view an employee");
@@ -407,128 +412,11 @@ function viewEmployees() {
         viewThings();
     })
 
-    
-
-    // connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, manager_id FROM employee INNER JOIN role ON employee.role_id = role.id", function(err, data){
-
-    //     if(err)throw err
-
-    //     console.table(data);
-    // })
-    // connection.query("SELECT * FROM role", function(err, data){
-
-    //     if (err) throw err
-    //            // use roleArr in the choices section in inquirer
-    //     let roleArr = data.map(function(role){
-    //         return{
-    //             name: role.title,
-    //             value: role.id
-    //         }
-    //     });
-
-    //     connection.query("SELECT * FROM employee WHERE manager_id IS NULL", function(err, data){
-
-    //             if (err) throw err
-    //         // I want an array of employees who are managers
-    //         // I need to match the role id of an employee to manager
-    //         // all employees where role id = whatever manager role id number is
-    //         let empArr = data.map(function(employee){
-    //             return{
-    //                 name: employee.first_name + " " + employee.last_name, 
-    //                 value: employee.id
-    //             }
-
-    //         })
-
-    //         inquirer.prompt([
-    //             {
-    //                 type: "input",
-    //                 message: "What is the first name of the employee you would like to view?",
-    //                 name: "firstName",     
-    //             },
-    //             {
-    //                 type: "input",
-    //                 message: "What is the last name of the employee you would like to view?",
-    //                 name: "lastName",     
-    //             },
-    //             {
-    //                 // roles are determined in the role section
-    //                 // once roles are input, this field will populate 
-    //                 // this will be a role title and id - user should select the title, the desired outcome is that titles id number
-    //                 type: "list",
-    //                 message: "What is the role of the employee you would like to add?",
-    //                 name: "roleId",
-    //                 choices: roleArr   
-    //             },
-    //             {
-    //                 // check for err here, this should return a managers id number 
-    //                 type: "list",
-    //                 message: "Who is this employees manager?",
-    //                 name: "managerId",
-    //                 choices: empArr,
-    //                 when: function(response){
-    //                     return response.roleId !== 1
-    //                 }
-    //             },
-    //             {
-    //                 type: "list",
-    //                 message: "That was so fun!, what would you like to do now?",
-    //                 name: "afterAddEmployee",
-    //                 choices: ["Add another department", "Add another role", "Add another employee", "Return to main menu", "Quit"]
-    //             }
-    //         ]).then(function(answer) {
-
-    //             connection.query(
-
-    //                 "INSERT INTO employee SET ?",
-    //                 {
-    //                     first_name: answer.firstName,
-    //                     last_name: answer.lastName,
-    //                     role_id: answer.roleId,
-    //                     manager_id: answer.managerId
-    //                 },
-
-    //                 function(err) {
-    //                     if (err) throw err;
-    //                     console.log("You have employees");
-    //                 }
-    //             );
-
-    //             switch(answer.afterAddEmployee){
-
-    //                 case "Add another department":
-    //                     addDepartments();
-    //                     break;
-
-    //                 case "Add another role":
-    //                     addRoles();
-    //                     break;
-
-    //                 case "Add another employee":
-    //                     addEmployees();
-    //                     break;
-
-    //                 case "Return to main menu":
-    //                     start();
-    //                     break;
-
-    //                 case "Quit":
-    //                     connection.end();
-    //                     break;
-
-    //                 default: 
-    //                     console.log("Something went wrong!");
-    //                     break;
-    //             }
-    //         });
-
-
-    //     })        
-    // })
-
 }
 
+// ----------------------------------------------------------- View roles
 function viewRoles() {
+
     console.log("view roles");
 
     connection.query("SELECT * FROM role", function (err, data) {
@@ -538,8 +426,10 @@ function viewRoles() {
         console.table(data);
         viewThings();
     })
+
 }
 
+// ---------------------------------------------------------View departments
 function viewDepartments() {
     console.log("view a department");
 
@@ -551,10 +441,12 @@ function viewDepartments() {
         viewThings();
     })
 }
-//TODO: updateThings function 
+
+//--------------------------------------------------------------------------------- Update things function 
 function updateThings() {
 
     console.log("updating employee roles");
+
     // get a list of employees and their roles to chose an employee id from 
     connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, manager_id FROM employee INNER JOIN role ON employee.role_id = role.id", function(err, data){
 
@@ -603,6 +495,7 @@ function updateThings() {
 
                 connection.query(
 
+                    // update the employee table in the role_id column for the employee with the id ?
                     "UPDATE employee SET role_id=? WHERE id=?", [answer.newTitle, answer.updateList],
         
                     function (err) {
@@ -629,56 +522,11 @@ function updateThings() {
                         console.log("Something went wrong!");
                         break;
                 }
+
             });
+
         })
-
-    
+ 
     })
-    // connection.query("SELECT * FROM role", function (err, data) {
-
-    //     if (err) throw err
-    //     let roleArr = data.map(function (role) {
-    //         return {
-    //             name: role.title,
-    //             value: role.id
-    //         }
-    //     });
-
-    //     inquirer.prompt([
-    //         {
-    //             type: "list",
-    //             message: "What role would you like to UPDATE?",
-    //             name: "updateList",
-    //             choices: roleArr
-    //         }
-    //     ])
-
-    // })
-
-}
-
-
-
-
-
-     //.then(function(answers){
-    //     console.log(answers)
-
-    //     console.log(generateHtml)
-    // })
-
-
-// to get an array of all departments
-
-// function add employee()... everything is inside of this function 
-    // 
-// connection.querry("SELECT * FROM department", function(err, data){
-//     if (err) throw err
-           // use depArr in the choices section in inquirer
-//     let depArr = data.map(function(dep){
-//         return{
-//             name:dep.title, 
-//             value: dep.id
-//         }
-//     })
-// })
+    
+}  
