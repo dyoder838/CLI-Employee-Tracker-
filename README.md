@@ -23,8 +23,9 @@ To install this project, simply type "npm i" in your CLI. to run it, type "node 
         
 
 ## Usage 
-        
-Type node index.js into your CLI and follow the prompts. Note: if you decide to clear the database I suggest start the database building from the department first, then role, then employee. they are all reliant on each other.
+
+[Tutorial Video](https://drive.google.com/file/d/17mi2eK4PNBgp-J0eFgeNb6_cVKwJyasP/view)     
+Type npm start into your CLI and follow the prompts. Note: if you decide to clear the database I suggest start the database building from the department first, then role, then employee. they are all reliant on each other.
             
 
 
